@@ -26,7 +26,7 @@ func Add(r *http.Request, m *Marketplace, listing *Listing) error {
 	listing.LastUpdate = time.Now()
 	context := appengine.NewContext(r)
 	if listing.Key == "" {
-		listing.Key = RandStringBytes(30)
+		listing.Key = randStringBytes(30)
 	}
 	key := datastore.NewKey(context, "Listing", listing.Key, 0, nil)
 	key, err := datastore.Put(context, key, listing)

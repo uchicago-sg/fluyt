@@ -7,7 +7,7 @@ import (
 	"strconv"
 )
 
-const RootPage = `
+const rootPage = `
 <!HTML head>
 <html>
 <head>
@@ -21,7 +21,7 @@ const RootPage = `
 </body>
 </html>`
 
-type Results struct {
+type results struct {
 	Count    int       `json:"count"`
 	Listings []Listing `json:"listings"`
 }
@@ -34,10 +34,11 @@ func init() {
 	http.Handle("/", NewMarketplace())
 }
 
+// Runs Marketplace as a web application.
 func (m *Marketplace) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	if r.Header.Get("Accept") != "text/javascript" {
 		w.Header().Set("Content-type", "text/html")
-		fmt.Fprintf(w, RootPage)
+		fmt.Fprintf(w, rootPage)
 		return
 	}
 
@@ -55,9 +56,11 @@ func (m *Marketplace) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			writeJSON(w, listing)
 
 		case "POST":
-			m.update(listing, w, r)
+			// TODO
+
 		case "DELETE":
-			m.delete(listing, w, r)
+			// TODO
+
 		default:
 			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
 		}
@@ -73,7 +76,7 @@ func (m *Marketplace) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 			listings := m.Search(query, skip, limit)
 
-			writeJSON(w, &Results{Listings: listings, Count: len(listings)})
+			writeJSON(w, &results{Listings: listings, Count: len(listings)})
 
 		case "POST":
 			for i := 0; i < 1000; i++ {

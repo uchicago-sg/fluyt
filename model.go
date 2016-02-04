@@ -2,9 +2,11 @@ package fluyt
 
 import (
 	"strings"
+	"sync"
 	"time"
 )
 
+// A Listing is an advertisement posted to Marketplace.
 type Listing struct {
 	Key        string    `json:"key"`
 	Title      string    `json:"title"`
@@ -12,11 +14,14 @@ type Listing struct {
 	LastUpdate time.Time `json:"lastUpdate"`
 }
 
+// A Marketplace stores the in-memory representation of all listings.
 type Marketplace struct {
 	Listings   map[string]Listing
 	LastUpdate time.Time
+	sync.Mutex
 }
 
+// NewMarketplace creates and allocates a new Marketplace representation.
 func NewMarketplace() *Marketplace {
 	m := &Marketplace{
 		Listings: make(map[string]Listing),
@@ -29,7 +34,11 @@ func (m *Marketplace) added(listing Listing) {
 	m.LastUpdate = listing.LastUpdate
 }
 
+// Retrieves the given listing from this instance.
 func (m *Marketplace) Lookup(path string) *Listing {
+	m.Lock()
+	defer m.Unlock()
+
 	result, ok := m.Listings[path]
 	if !ok {
 		return nil
@@ -38,7 +47,11 @@ func (m *Marketplace) Lookup(path string) *Listing {
 	}
 }
 
+// Search looks for listings matching the given query.
 func (m *Marketplace) Search(query string, skip, limit int) []Listing {
+	m.Lock()
+	defer m.Unlock()
+
 	results := make([]Listing, 0)
 
 	for _, listing := range m.Listings {
