@@ -1,0 +1,8 @@
+application: go-marketplace
+runtime: go
+api_version: go1
+version: master
+
+handlers:
+- url: /.*
+  script: _goapp
