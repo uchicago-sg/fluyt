@@ -10,6 +10,11 @@ type Person struct {
 	Roaming string `json:"roaming"` // "" if signed in via Shibboleth
 }
 
+type Photo struct {
+	Small string `json:"small"`
+	Large string `json:"large"`
+}
+
 type Listing struct {
 	Permalink  string    `json:"key"`
 	Title      string    `json:"title"`
@@ -20,6 +25,7 @@ type Listing struct {
 	Approved   bool      `json:"approved"`
 	Sold       bool      `json:"sold"`
 	LastUpdate time.Time `json:"lastUpdate"`
+	Photos     []Photo   `json:"photos"`
 }
 
 func (l *Listing) Key() string {

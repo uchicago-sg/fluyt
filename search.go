@@ -2,7 +2,7 @@ package fluyt
 
 import (
 	"encoding/json"
-	"github.com/uchicago-sg/scroll"
+	"github.com/fatlotus/scroll"
 	"net/http"
 	"sync"
 )
