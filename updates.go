@@ -6,19 +6,22 @@ import (
 )
 
 func (m *Marketplace) CreateListing(w http.ResponseWriter, r *http.Request) {
+	ctx := makeContext(r)
 	listing := Listing{}
 	err := json.NewDecoder(r.Body).Decode(&listing)
+
 	if err != nil {
 		http.Error(w, err.Error(), 200)
 	}
 
-	if err = m.Backend.Append(listing); err != nil {
+	if err = m.Backend.Append(ctx, listing); err != nil {
 		http.Error(w, err.Error(), 200)
 	}
 }
 
 func (m *Marketplace) GetListing(w http.ResponseWriter, r *http.Request) {
 	listing, ok := m.Listings[r.FormValue(":listing")]
+
 	if !ok {
 		http.NotFound(w, r)
 		return
@@ -28,6 +31,7 @@ func (m *Marketplace) GetListing(w http.ResponseWriter, r *http.Request) {
 }
 
 func (m *Marketplace) PatchListing(w http.ResponseWriter, r *http.Request) {
+	ctx := makeContext(r)
 	listing, ok := m.Listings[r.FormValue(":listing")]
 	if !ok {
 		http.NotFound(w, r)
@@ -43,7 +47,7 @@ func (m *Marketplace) PatchListing(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "not allowed to change seller", 401)
 	}
 
-	if err := m.Backend.Append(after); err != nil {
+	if err := m.Backend.Append(ctx, after); err != nil {
 		http.Error(w, err.Error(), 500)
 	}
 

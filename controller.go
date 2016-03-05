@@ -2,7 +2,6 @@ package fluyt
 
 import (
 	"github.com/husobee/vestigo"
-	"google.golang.org/appengine"
 	"net/http"
 )
 
@@ -11,17 +10,20 @@ func Serial(m *Marketplace, f http.HandlerFunc) http.HandlerFunc {
 		m.Lock()
 		defer m.Unlock()
 
-		m.Backend.SetContext(appengine.NewContext(r))
-		m.Sync()
+		m.Sync(makeContext(r))
 
 		f(w, r)
 	}
 }
 
-func init() {
+func MarketplaceHandler() http.Handler {
 	m := NewMarketplace()
 
 	router := vestigo.NewRouter()
+	router.SetGlobalCors(&vestigo.CorsAccessControl{
+		AllowOrigin: []string{"*"},
+	})
+
 	router.Get("/listings", Serial(m, m.SearchListings))
 	router.Post("/listings", Serial(m, m.CreateListing))
 	router.Get("/listings/:listing", Serial(m, m.GetListing))
@@ -29,6 +31,7 @@ func init() {
 	router.Patch("/listings/:listing", Serial(m, m.PatchListing))
 	router.Get("/inquiries", Serial(m, m.SearchInquiries))
 	router.Post("/listings/:listing/inquiries", Serial(m, m.SendInquiry))
+	router.Handle("/", http.FileServer(http.Dir("static")))
 
-	http.Handle("/", router)
+	return router
 }

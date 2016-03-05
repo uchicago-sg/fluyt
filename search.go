@@ -3,6 +3,7 @@ package fluyt
 import (
 	"encoding/json"
 	"github.com/fatlotus/scroll"
+	"golang.org/x/net/context"
 	"net/http"
 	"sync"
 )
@@ -16,7 +17,7 @@ type Marketplace struct {
 }
 
 func NewMarketplace() *Marketplace {
-	log := scroll.DatastoreLog(nil, "Operation")
+	log := makeBackend()
 	return &Marketplace{
 		Listings:        make(map[string]Listing),
 		PendingListings: make(map[Person]map[string]Listing),
@@ -25,10 +26,10 @@ func NewMarketplace() *Marketplace {
 	}
 }
 
-func (m *Marketplace) Sync() error {
+func (m *Marketplace) Sync(ctx context.Context) error {
 	listing := Listing{}
 	for {
-		err := m.Cursor.Next(&listing)
+		err := m.Cursor.Next(ctx, &listing)
 		if err == scroll.Done {
 			break
 		} else if err != nil {

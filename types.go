@@ -33,5 +33,5 @@ func (l *Listing) Key() string {
 }
 
 func (l *Listing) Match(query string) bool {
-	return strings.Contains(strings.ToLower(l.Title), query)
+	return strings.Contains(strings.ToLower(l.Title), strings.ToLower(query))
 }
