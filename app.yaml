@@ -6,3 +6,5 @@ version: master
 handlers:
 - url: /.*
   script: _goapp
+  http_headers:
+    Access-Control-Allow_Origin: *
